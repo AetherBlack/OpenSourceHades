@@ -1,0 +1,10 @@
+version: "3.4"
+services:
+  hades:
+    build: ./build/
+    image: hades:latest
+    container_name: hades_instance
+    ports:
+      - "8282:80"
+    volumes:
+      - ./build/src/:/app

