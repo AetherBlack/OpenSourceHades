@@ -4,7 +4,6 @@ from flask import request
 from flask import Flask
 
 import subprocess
-import base64
 
 app = Flask(__name__)
 
@@ -104,17 +103,18 @@ def api_generate():
 
     makecmd = options.generateMake()
 
-    html = create_html(options)
-
     process = subprocess.Popen(makecmd, stdout=subprocess.PIPE)
     status = process.wait()
 
     if not status:
-        return {"file": send_file("hades"), "html": html}
+        return send_file("hades")
     else:
         return Response(f"Error {status}: {process.stdout.readline()}", status=403)
-   
-def create_html(options: Options):
+
+@app.route("/api/rapport", methods=["POST"])
+def create_html():
+
+    options = Options(request.json)
 
     first = """
     <!DOCTYPE html>

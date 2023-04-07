@@ -99,18 +99,27 @@
           json[key] = value;
         }
 
-        const xhr = new XMLHttpRequest();
-        xhr.responseType = "blob";
-        xhr.onload = function (e) {
+        const hades_xhr_generate = new XMLHttpRequest();
+        hades_xhr_generate.responseType = "blob";
+        hades_xhr_generate.onload = function (e) {
           var blob = e.currentTarget.response;
           var contentDispo = e.currentTarget.getResponseHeader('Content-Disposition');
           // var fileName = contentDispo.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1];
           var filename = "hades";
           download(blob, filename);
         }
-        xhr.open('POST', '/api/generate');
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify(json));
+        hades_xhr_generate.open('POST', '/api/generate');
+        hades_xhr_generate.setRequestHeader('Content-Type', 'application/json');
+        hades_xhr_generate.send(JSON.stringify(json));
+
+        const hades_xhr_rapport = new XMLHttpRequest();
+        hades_xhr_rapport.onload = function (e) {
+          var html = e.currentTarget.response;
+          document.write(html);
+        }
+        hades_xhr_rapport.open("POST", "/api/rapport");
+        hades_xhr_rapport.setRequestHeader("Content-Type", "application/json");
+        hades_xhr_rapport.send(JSON.stringify(json));
       }
       function download(blob, fileName) {
           var a = document.createElement('a');
