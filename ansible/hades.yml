@@ -1,0 +1,19 @@
+- name: Hades
+  hosts: all
+  become: yes
+  
+  vars:
+      malwareDir: "./malware"
+      DeployDir: "/mnt/malware"
+
+  tasks: 
+   - name: create directory if they don't exist
+     file:
+       path: "{{ item }}"
+       state: directory
+       owner: "{{ user }}"
+       group: "{{ user }}"
+       mode: 0775
+     loop:
+       - "{{ DeployDir }}"
+   - include: "./tasks/deploy_malware.yml" 
